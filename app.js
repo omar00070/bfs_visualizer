@@ -70,7 +70,7 @@ function EndNode(index_x, index_y, color) {
 gridGenerate();
 
 start_node = new StartNode(15, 15, "green");
-end_node = new EndNode(26, 14, "red");
+end_node = new EndNode(18, 14, "red");
 
 function draw() {
   for (let i = 0; i < maxNumberCols; i++) {
@@ -130,7 +130,11 @@ function isValid(move) {
   console.log(visited.includes(move));
   console.log(move);
   if (move[0] < grid[0].length && move[1] < grid.length) {
-    if (!visited.includes(move)) {
+    if (
+      !visited.includes(move) &&
+      grid[move[1]][move[0]] != "S" &&
+      grid[move[1]][move[0]] != "E"
+    ) {
       return true;
     }
   }
@@ -148,26 +152,32 @@ const unvisited_list = [[start_node.index_x, start_node.index_y]];
 
 function bfs() {
   [x, y] = unvisited_list.shift();
-  let directions = ["L", "U", "R", "D"];
-
-  for (let i = 0; i < directions.length; i++) {
-    move = getMove(x, y, directions[i]);
-    if (isValid(move)) {
-      unvisited_list.push(move);
+  if (grid[y][x] != "E") {
+    let directions = ["L", "U", "R", "D"];
+    for (let i = 0; i < directions.length; i++) {
+      move = getMove(x, y, directions[i]);
+      if (isValid(move)) {
+        unvisited_list.push(move);
+      }
     }
   }
-
   visited.push([x, y]);
-  grid[x][y] = "V";
+  if (isValid([x, y])) {
+    grid[y][x] = "V";
+  }
+  return [x, y];
   console.log(visited);
 }
 
 function animate() {
   requestAnimationFrame(animate);
   draw();
+  //   if (grid[bfs()[1]][bfs()[0]] === "E") {
+  //     starting = false;
+  //   }
   if (starting) {
     bfs();
   }
 }
 
-// animate();
+animate();
