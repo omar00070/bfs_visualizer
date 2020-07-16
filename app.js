@@ -7,6 +7,8 @@ canvas.width = window.innerWidth;
 c = canvas.getContext("2d");
 
 //grid size
+let [i, j] = [undefined, undefined];
+const visited = [];
 const grid = [];
 box_width = 20;
 box_height = 20;
@@ -127,32 +129,42 @@ function getMove(i, j, direction) {
 }
 
 function isValid(move) {
-  console.log(visited.includes(move));
-  console.log(move);
   if (move[0] < grid[0].length && move[1] < grid.length) {
-    if (
-      !visited.includes(move) &&
-      grid[move[1]][move[0]] != "S" &&
-      grid[move[1]][move[0]] != "E"
-    ) {
+    if (listHas(visited, move)) return false;
+    if (grid[move[1]][move[0]] != "S" && grid[move[1]][move[0]] != "E") {
       return true;
     }
   }
   return false;
 }
 
-let [i, j] = [undefined, undefined];
-const visited = [
-  [1, 2],
-  [3, 4],
-];
+//check if a list of lists includes a list
+//arguments(list_of_lists, list)
+//return bool
+function listHas(array1, array2) {
+  let ar1 = array1;
+  let ar2 = array2;
+  for (let j = 0; j < ar1.length; j++) {
+    ar1_child = ar1[j];
+    let equals = true;
+    if (ar1_child.length == ar2.length) {
+      for (let i = 0; i < ar1_child.length; i++) {
+        if (ar1_child[i] != ar2[i]) {
+          equals = false;
+        }
+      }
+      if (!equals) continue;
+      return true;
+    } else continue;
+  }
+  return false;
+}
 
-console.log(visited.includes([1, 2]));
 const unvisited_list = [[start_node.index_x, start_node.index_y]];
-
 function bfs() {
   [x, y] = unvisited_list.shift();
-  if (grid[y][x] != "E") {
+  console.log(x, y);
+  if (grid[y][x] !== "E") {
     let directions = ["L", "U", "R", "D"];
     for (let i = 0; i < directions.length; i++) {
       move = getMove(x, y, directions[i]);
@@ -162,11 +174,7 @@ function bfs() {
     }
   }
   visited.push([x, y]);
-  if (isValid([x, y])) {
-    grid[y][x] = "V";
-  }
-  return [x, y];
-  console.log(visited);
+  grid[y][x] = "V";
 }
 
 function animate() {
